@@ -2,6 +2,8 @@ import yfinance as yf
 import pandas as pd
 import requests
 import os
+import datetime
+import time
 
 # Stock symbol and Pushover credentials
 symbol = "SPY"
@@ -34,11 +36,6 @@ def calc_stochastic(df, n=14):
     df["%D"] = df["%K"].rolling(3).mean()
 
     latest_data = df.tail(1)
-
-    if latest_data["%K"].values[0] > 80 and latest_data["%D"].values[0] > 80:
-        send_pushover_notification(
-            f"Alert: {symbol} stock price is currently above 80!"
-        )
 
     if (
         latest_data["%K"].values[0] < 80
@@ -89,8 +86,16 @@ def calc_rsi(data, time_window=14):
     return rsi
 
 
-spyTicker = yf.Ticker(symbol)
-df = pd.DataFrame(spyTicker.history(period="3mo", interval="1h"))
+print("Starting the program...")
+while True:
+    current_time = datetime.datetime.now()
+    if current_time.hour >= 7 and current_time.hour < 15:
+        spyTicker = yf.Ticker(symbol)
+        df = pd.DataFrame(spyTicker.history(period="3mo", interval="1h"))
 
-spy_data = calc_stochastic(df)
-rsi = calc_rsi(df["Close"])
+        spy_data = calc_stochastic(df)
+        rsi = calc_rsi(df["Close"])
+
+        time.sleep(1800)  # Delay for 30 minutes
+    else:
+        time.sleep(1800)  # Delay for 30 minutes until the next session
