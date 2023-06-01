@@ -87,6 +87,7 @@ def calc_rsi(data, time_window=14):
 
 
 print("Starting the program...")
+send_pushover_notification("Started and instance of stok-alert...")
 while True:
     current_time = datetime.datetime.now()
     if current_time.hour >= 7 and current_time.hour < 15:
